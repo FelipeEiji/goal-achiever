@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:goal_achiever/providers/task.dart';
+import 'package:goal_achiever/providers/tasks.dart';
 import 'package:goal_achiever/screens/task_list.dart';
 import 'package:provider/provider.dart';
 

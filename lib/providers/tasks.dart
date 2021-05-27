@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:goal_achiever/models/http_exception.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/cupertino.dart';
@@ -45,7 +46,7 @@ class Tasks with ChangeNotifier {
           id: prodId,
           title: prodData['title'],
           description: prodData['description'],
-          date: prodData['date'],
+          date: DateTime.now(),
           isDone: prodData['isDone'],
         ));
       });
@@ -72,5 +73,42 @@ class Tasks with ChangeNotifier {
     _tasks.add(newTask);
     print(response.body);
     notifyListeners();
+  }
+
+  Future<void> updateProduct(String id, TaskItem newTask) async {
+    final taskIndex = _tasks.indexWhere((task) => task.id == id);
+    if (taskIndex >= 0) {
+      final url = Uri.parse(
+          'https://goal-achiever-171150-default-rtdb.firebaseio.com/tasks/$id.json?auth=$authToken');
+      await http.patch(url,
+          body: json.encode({
+            'id': newTask.id,
+            'title': newTask.title,
+            'description': newTask.description,
+            'date': newTask.date.toString(),
+            'isDone': newTask.isDone,
+          }));
+      _tasks[taskIndex] = newTask;
+      notifyListeners();
+    } else {
+      print('...');
+    }
+  }
+
+  Future<void> deletaTask(String id) async {
+    final url = Uri.parse(
+        'https://goal-achiever-171150-default-rtdb.firebaseio.com/tasks/$id.json?auth=$authToken');
+    final existingTaskIndex = _tasks.indexWhere((task) => task.id == id);
+    var existingTask = _tasks[existingTaskIndex];
+    _tasks.removeAt(existingTaskIndex);
+    notifyListeners();
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      _tasks.insert(existingTaskIndex, existingTask);
+      notifyListeners();
+      print(response.body);
+      print(authToken);
+      throw HttpException('Could not delete product.');
+    }
   }
 }
