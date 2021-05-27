@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goal_achiever/providers/task.dart';
 import 'package:goal_achiever/screens/task_list.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,11 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider.value(
             value: Auth(),
+          ),
+          ChangeNotifierProxyProvider<Auth, Tasks>(
+            create: (_) => Tasks(null, []),
+            update: (ctx, auth, previousTasks) => Tasks(
+                auth.token, previousTasks == null ? [] : previousTasks.tasks),
           ),
         ],
         child: Consumer<Auth>(
