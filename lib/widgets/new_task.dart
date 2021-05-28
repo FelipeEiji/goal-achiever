@@ -40,7 +40,7 @@ class _NewTaskState extends State<NewTask> {
     showDatePicker(
         context: context,
         initialDate: DateTime.now(),
-        firstDate: DateTime(2021),
+        firstDate: DateTime.now(),
         lastDate: DateTime.now().add(
           Duration(days: 365),
         )).then((pickedDate) {
