@@ -46,7 +46,7 @@ class Tasks with ChangeNotifier {
           id: prodId,
           title: prodData['title'],
           description: prodData['description'],
-          date: DateTime.now(),
+          date: DateTime.parse(prodData['date']),
           isDone: prodData['isDone'],
         ));
       });
@@ -70,7 +70,14 @@ class Tasks with ChangeNotifier {
         'isDone': newTask.isDone,
       }),
     );
-    _tasks.add(newTask);
+    final TaskItem newerTask = TaskItem(
+      id: json.decode(response.body)['name'],
+      title: newTask.title,
+      description: newTask.description,
+      date: newTask.date,
+      isDone: newTask.isDone,
+    );
+    _tasks.add(newerTask);
     print(response.body);
     notifyListeners();
   }
