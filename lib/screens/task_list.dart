@@ -67,66 +67,76 @@ class _TaskListState extends State<TaskList> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => _refreshTasks(context),
-        child: Consumer<Tasks>(
-          builder: (context, tasks, child) => ListView.builder(
-            padding: EdgeInsets.all(8),
-            itemCount: tasks.tasks.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                  height: 50,
-                  child: Card(
-                    elevation: 5,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          flex: 1,
-                          child: Checkbox(
-                            value: tasks.tasks[index].isDone,
-                            onChanged: (value) {
-                              tasks.tasks[index].isDone =
-                                  !tasks.tasks[index].isDone;
-                              _changeTaskDoneStatus(
-                                  context, tasks.tasks[index]);
-                            },
+      body: FutureBuilder(
+        future: _refreshTasks(context),
+        builder: (ctx, snapshot) => snapshot.connectionState ==
+                ConnectionState.waiting
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : RefreshIndicator(
+                onRefresh: () => _refreshTasks(context),
+                child: Consumer<Tasks>(
+                  builder: (context, tasks, child) => ListView.builder(
+                    padding: EdgeInsets.all(8),
+                    itemCount: tasks.tasks.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Container(
+                        height: 50,
+                        child: Card(
+                          elevation: 5,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Checkbox(
+                                  value: tasks.tasks[index].isDone,
+                                  onChanged: (value) {
+                                    tasks.tasks[index].isDone =
+                                        !tasks.tasks[index].isDone;
+                                    _changeTaskDoneStatus(
+                                        context, tasks.tasks[index]);
+                                  },
+                                ),
+                              ),
+                              Expanded(
+                                  flex: 7,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(tasks.tasks[index].title),
+                                      Text(
+                                        formatDate(tasks.tasks[index].date, [
+                                          M,
+                                          ' ',
+                                          dd,
+                                          ',',
+                                          yyyy,
+                                          ' ',
+                                        ]),
+                                        style: TextStyle(color: Colors.grey),
+                                      )
+                                    ],
+                                  )),
+                              Expanded(
+                                flex: 1,
+                                child: IconButton(
+                                  onPressed: () => _deleteTask(
+                                      context, tasks.tasks[index].id),
+                                  icon: Icon(Icons.delete),
+                                ),
+                              )
+                            ],
                           ),
                         ),
-                        Expanded(
-                            flex: 7,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(tasks.tasks[index].title),
-                                Text(
-                                  formatDate(tasks.tasks[index].date, [
-                                    M,
-                                    ' ',
-                                    dd,
-                                    ',',
-                                    yyyy,
-                                    ' ',
-                                  ]),
-                                  style: TextStyle(color: Colors.grey),
-                                )
-                              ],
-                            )),
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            onPressed: () =>
-                                _deleteTask(context, tasks.tasks[index].id),
-                            icon: Icon(Icons.delete),
-                          ),
-                        )
-                      ],
-                    ),
-                  ));
-            },
-          ),
-        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
       ),
       drawer: HamburgerMenu(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

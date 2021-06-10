@@ -22,8 +22,9 @@ class TaskItem {
 
 class Tasks with ChangeNotifier {
   final String? authToken;
+  final String? userId;
 
-  Tasks(this.authToken, this._tasks);
+  Tasks(this.authToken, this.userId, this._tasks);
 
   List<TaskItem> _tasks = [];
 
@@ -33,7 +34,7 @@ class Tasks with ChangeNotifier {
 
   Future<void> fetchAndSetTasks() async {
     final url = Uri.parse(
-        'https://goal-achiever-171150-default-rtdb.firebaseio.com/tasks.json?auth=$authToken');
+        'https://goal-achiever-171150-default-rtdb.firebaseio.com/tasks.json?auth=$authToken&orderBy="userId"&equalTo="$userId"');
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -63,6 +64,7 @@ class Tasks with ChangeNotifier {
     final response = await http.post(
       url,
       body: json.encode({
+        'userId': userId,
         'id': newTask.id,
         'title': newTask.title,
         'description': newTask.description,

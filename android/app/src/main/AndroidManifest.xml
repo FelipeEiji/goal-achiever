@@ -1,7 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.goal_achiever">
-   <application
-        android:label="goal_achiever"
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application
+        android:label="Goal Achiever"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

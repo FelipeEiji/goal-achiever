@@ -22,6 +22,13 @@ class Auth with ChangeNotifier {
     return null;
   }
 
+  String? get userId {
+    if (_userId != null) {
+      return _userId;
+    }
+    return null;
+  }
+
   Future<void> _authenticate(
       String email, String password, String urlSegment) async {
     final url = Uri.parse(
